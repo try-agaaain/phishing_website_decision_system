@@ -1,5 +1,11 @@
-## 决策树辨别钓鱼网站
-
+## 使用方式
+```python
+conda activate yourenv  # 可选
+pip install -r requirements.txt
+cd ./DecisionTreeSystem
+python main.py
+```
+## 构建决策树
 用不同数据构建决策树，整体的过程是相似的。先举个例子，假如有一筐水果，里面装了两种水果：梨和苹果。现在从筐中取出一个水果，识别其是否是苹果，我们假定大部分的苹果是红色，大部分的梨是淡黄色。我们选取水果的两个特征：一个是味道，味甜则取值为1，否则取值为-1；另一个是颜色，红色则取值为1，否则取值为-1。
 接下来构建决策树，根据决策的先后顺序，可以有两种决策树，如下：
 
@@ -71,8 +77,7 @@ $$
 这类似于公式`(4)`中的第二项，所以不难理解，在进行特征选择时，`CART算法`会选择使`Gini_index`最小的特征。
 
 
-
-参考链接：
+## 参考链接
 
 [Phishing Websites](https://archive-beta.ics.uci.edu/ml/datasets/phishing+websites)：本项目的数据来源
 
