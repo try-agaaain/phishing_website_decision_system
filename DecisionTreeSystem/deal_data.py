@@ -3,7 +3,6 @@ from sklearn.model_selection import train_test_split
 from math import log
 
 
-
 def read_datas(filename):
     '''
     读取全部数据，返回训练集、测试集、标签，训练集和测试集比例为2:1
@@ -19,10 +18,14 @@ def read_datas(filename):
         dataset.append(line)
 
     # 使用sklearn库来划分数据集
-    data_train, data_test = train_test_split(
-            dataset, test_size=0.33, random_state=42, shuffle=True)
+    # data_train, data_test = train_test_split(
+    #         dataset, test_size=0.33, random_state=42, shuffle=True)
+    number = len(dataset) / 3
+    data_train, data_validation, data_test = dataset[:number], \
+                                         dataset[number:number * 2], \
+                                         dataset[number * 2:]
 
-    return data_train, data_test
+    return data_train, data_validation, data_test
 
 
 def splitdataset(dataset, axis, value, returnAnother=False):
@@ -30,7 +33,7 @@ def splitdataset(dataset, axis, value, returnAnother=False):
     划分数据集，保留第axis+1列取值为value的样本，并去掉第axis列
     '''
 
-    restDataset = []    # 记录第axis+1列取值为value的样本，并去掉第axis列
+    restDataset = []  # 记录第axis+1列取值为value的样本，并去掉第axis列
     anotherDataset = []  # 记录不符合条件的样本集
     # 抽取符合划分特征的值
     for featVec in dataset:
@@ -64,8 +67,8 @@ def majorityCnt(classList):
             classCont[vote] = 0
         classCont[vote] += 1
     sortedClassCont = sorted(classCont.items(),
-                            key=operator.itemgetter(1),
-                            reverse=True)
+                             key=operator.itemgetter(1),
+                             reverse=True)
     return dict(sortedClassCont), sortedClassCont[0][0]
 
 

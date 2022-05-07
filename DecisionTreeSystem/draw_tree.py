@@ -84,7 +84,7 @@ class DrawTree:
         self.visit(dic)
         # 生成PNG
         self.graph.write_png(
-            './Images/{}.png'.format(filename))  # 最后结果生成png图片格式
+            '../Images/{}.png'.format(filename))  # 最后结果生成png图片格式
 
     def get_nodeNum(self):
         '''

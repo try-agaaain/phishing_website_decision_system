@@ -5,6 +5,7 @@ pip install -r requirements.txt
 cd ./DecisionTreeSystem
 python main.py
 ```
+注意：项目中使用了Graphiz，要使用pydot库，需先安装Graphviz，进入[官网下载](http://www.graphviz.org/download/)即可。
 ## 构建决策树
 用不同数据构建决策树，整体的过程是相似的。先举个例子，假如有一筐水果，里面装了两种水果：梨和苹果。现在从筐中取出一个水果，识别其是否是苹果。我们选取水果的两个特征：一个是味道，味甜则取值为1，否则取值为-1；另一个是颜色，红色则取值为1，否则取值为-1。
 接下来根据从这筐水果中收集到的数据构建决策树，根据决策的先后顺序，可以有两种决策树，如下：
