@@ -1,12 +1,15 @@
 import operator
+import random
+
 from sklearn.model_selection import train_test_split
 from math import log
 
 
-def read_datas(filename):
-    '''
-    读取全部数据，返回训练集、测试集、标签，训练集和测试集比例为2:1
-    '''
+def read_datas(filename, train_ratio, valitation_ratio, test_ratio):
+    """
+    读取全部数据，返回训练集、验证集、测试集、标签，
+    训练集：验证集：测试集的比例为 train_ratio:valitation_ratio:test_ratio
+    """
 
     fr = open(filename, 'r')
     all_lines = fr.readlines()  # list形式,每行为1个str
@@ -17,13 +20,16 @@ def read_datas(filename):
         line = line.strip().split(',')  # 以逗号为分割符拆分列表
         dataset.append(line)
 
+    # random.shuffle(dataset)
     # 使用sklearn库来划分数据集
     # data_train, data_test = train_test_split(
     #         dataset, test_size=0.33, random_state=42, shuffle=True)
-    number = len(dataset) / 3
-    data_train, data_validation, data_test = dataset[:number], \
-                                         dataset[number:number * 2], \
-                                         dataset[number * 2:]
+    train_number = int(len(dataset) * train_ratio)
+    valitation_number = int(len(dataset) * valitation_ratio)
+    split_point1, split_point2 = train_number, train_number+valitation_number
+    data_train, data_validation, data_test = dataset[:split_point1], \
+                                         dataset[split_point1:split_point2 * 2], \
+                                         dataset[split_point2:]
 
     return data_train, data_validation, data_test
 

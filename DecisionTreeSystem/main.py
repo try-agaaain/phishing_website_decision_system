@@ -1,14 +1,18 @@
 import cv2
 from decision_method import id3_choose_best_feature, \
-                            c45_choose_best_feature, \
-                            cart_choose_best_feature
+    c45_choose_best_feature, \
+    cart_choose_best_feature
 from draw_tree import DrawTree
 from decision_tree import create_tree, change_config
 from classify import classify_test
 from deal_data import cal_acc, read_datas
 
+import os
+from PIL import Image
+import matplotlib.pyplot as plt
 
-def summary_result(labels, data_train, data_test):
+
+def summary_result(labels, data_train, data_validation, data_test):
     '''
     将两种剪枝算法和三种特征选择算法相结合运用于数据集，
     构建生成树，将结果统计为表格，其中包含准确率和树的节点数
@@ -45,7 +49,7 @@ def summary_result(labels, data_train, data_test):
             decisionTree = create_tree(
                 data_train,
                 labels_tmp,
-                data_test,
+                data_validation,
                 method)
             # data_test = data_train  # 如果要计算训练集上的准确率，则在计算前将测试集改为训练集
             # 对测试集进行预测
@@ -69,17 +73,12 @@ def summary_result(labels, data_train, data_test):
                 bestTree = methodName
                 maxAccuracy = accuracy
                 prune = cut
-            # 展示据册数
-            img = cv2.imread(f'../Images/{filename}.png')
-            img = cv2.resize(img, (2560, 1440))
-            cv2.imshow(filename, img)
-            cv2.waitKey(0)
         print()  # 打印换行符
 
     # 打印最佳决策树结果
     print(f'最好的决策方法为{bestTree}\n',
-          f'准确率为{maxAccuracy}\n'
-          f'剪枝情况为 预剪枝：{prune[0]} 后剪枝：{prune[1]}')
+          f'剪枝情况为 预剪枝：{prune[0]} 后剪枝：{prune[1]}\n',
+          f'准确率为{maxAccuracy}\n')
 
 
 def front_n_layer_tree(tree, current, target):
@@ -130,6 +129,32 @@ def draw_front_tree(labels, data_train, data_test, method, front=None):
     photo_draw.start(subtree, filename)
 
 
+def draw_specify_tree(data_train, data_validation, data_test, labels, method, cut):
+    # 展示最简单的一颗决策树C45预剪枝算法
+    labels_tmp = labels[:]  # 拷贝，createTree会改变labels
+    # 设置剪枝策略
+    change_config(cut)
+    decisionTree = create_tree(
+        data_train,
+        labels_tmp,
+        data_validation,
+        method)
+    pre_result = classify_test(decisionTree, labels, data_test)
+    actual_result = [sample[30] for sample in data_test]
+    accuracy = cal_acc(pre_result, actual_result)
+    print(f'\n在测试集上的准确率为：{accuracy}\n')
+    # 绘制决策树
+    photo_draw = DrawTree(brief=False)
+    photo_draw.start(decisionTree, 'C45_True _False')
+    filename = '../Images/C45_True _False.png'
+    img = Image.open(filename)
+    plt.figure("Image")  # 图像窗口名称
+    plt.imshow(img)
+    plt.axis('off')  # 关掉坐标轴为 off
+    plt.title('Decision tree constructed by C4.5 and pre-pruning strategy')  # 图像题目
+    plt.show()
+
+
 if __name__ == '__main__':
     # 全部特征以及判别结果的名称
     labels = ["having_IP_Address", "URL_Length", "Shortining_Service",
@@ -145,11 +170,13 @@ if __name__ == '__main__':
 
     # 读取数据并划分为训练集和测试集
     filename = '../Datas/UniqueDatas.txt'
-    data_train, data_validation, data_test = read_datas(filename)
+    data_train, data_validation, data_test = read_datas(filename, 0.6, 0.2, 0.2)
 
-    summary_result(labels, data_train, data_validation)  # 查看整体结果
+    draw_specify_tree(data_train, data_validation, data_test, labels, c45_choose_best_feature, (True, False))
+
+    summary_result(labels, data_train, data_validation, data_test)  # 查看整体结果
 
     # 绘制前三层决策树
-    labels_tmp = labels[:]
-    change_config((False, True))
-    draw_front_tree(labels_tmp, data_train, data_test, id3_choose_best_feature, 10)
+    # labels_tmp = labels[:]
+    # change_config((False, True))
+    # draw_front_tree(labels_tmp, data_train, data_test, id3_choose_best_feature, 10)
